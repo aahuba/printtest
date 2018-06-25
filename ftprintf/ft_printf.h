@@ -25,7 +25,6 @@
 
 typedef struct	s_printf
 {
-	char		type;
 	int			w;
 	int			precis;
 	int			h;
@@ -39,7 +38,6 @@ typedef struct	s_printf
 	int			left;
 	int			spec;
 	int			plus;
-	int			point;
 	char		znak;
 	char		*format;
 	char		*format_spec;

@@ -16,7 +16,6 @@ void		ft_pstr(char *str, t_printf all, int *pd, char c)
 	(*str == '\0' && c == 'c' && ++(*pd)) ? write(1, "\0", 1) : 0;
 	if (*str)
 		while (i < l && ++(*pd))
-			// write(1, &str[i++], 1);
 			ft_putchar(str[i++]);
 	i = (all.w > l && all.left == 1) ? (all.w - l) : 0;
 	while (i--)
@@ -43,17 +42,6 @@ void		parse_conv(t_printf *all, char *format)
 	}
 }
 
-// void	ft_char(t_printf all, va_list ap, int *pd)
-// {
-// 	char	*s;
-	
-// 	s = malloc(sizeof(char) * 2);
-// 	s[0] = va_arg(ap, int);
-// 	s[1] = '\0';
-// 	ft_pstr(s, all, pd, 'c');
-// 	free(s);
-// }	
-
 char	*ft_modific_2(t_printf *all, char *str)
 {
 	if (all->l_m < 3)
@@ -66,7 +54,7 @@ char	*ft_modific_2(t_printf *all, char *str)
 	return (str);
 }
 
-void	ft_modific_1(t_printf *all, char *str)
+char	*ft_modific_1(t_printf *all, char *str)
 {
 	if (*(str + 1) != '\0' && *(str + 1) == 'h')
 	{
@@ -76,6 +64,7 @@ void	ft_modific_1(t_printf *all, char *str)
 	}
 	else if (all->l_m < 2)
 		all->l_m = 2;
+	return (str);
 }
 
 void	ft_modific(t_printf *all, char *str)
@@ -83,7 +72,7 @@ void	ft_modific(t_printf *all, char *str)
 	while (*str && (*str == 'h' || *str == 'l' || *str == 'z' || *str == 'j'))
 	{
 		if (*str == 'h')
-			ft_modific_1(all, str);
+			str = ft_modific_1(all, str);
 		else if (*str == 'l')
 			str = ft_modific_2(all, str);
 		else if (*str == 'z')
@@ -104,7 +93,7 @@ int		ft_spaces(t_printf all, char *s, int l, char c)
 	spaces = (*s == '0' && all.precis == 0) ? 0 : spaces;
 	spaces = (all.w > spaces) ? all.w - spaces : 0;
 	spaces = (c == 'x' && all.hash == 1 && all.zero == 0 && (*s != '0' \
-		|| all.type == 'p')) ? spaces - 2 : spaces;
+		|| c == 'p')) ? spaces - 2 : spaces;
 	spaces = (c == 'o' && all.hash == 1) ? spaces - 1 : spaces;
 	return (spaces);
 }
@@ -117,19 +106,16 @@ void	ft_prnum(char *s, t_printf all, char c, int *pd)
 	l = (s != NULL) ? ft_strlen(s) : 0;
 	spaces = ft_spaces(all, s, l, c);
 	l = (all.precis > l) ? all.precis - l : 0;
-	if (all.hash == 1 && (c == 'x' || c == 'X' || all.type == 'p') && all.zero != 0 && (spaces -= 2) && (*pd += 2))
+	if (all.hash == 1 && (c == 'x' || c == 'X') && all.zero != 0)
+	{
 		(c == 'X') ? write(1, "0X", 2) : write(1, "0x", 2);
+		spaces -= 2;
+		(*pd) += 2;
+	}
 	if (all.znak != 'n' && all.zero != 0 && ++(*pd))
 		write(1, &all.znak, 1);
-	while (spaces > 0 && all.left == 0 && ++(*pd))
-	{
+	while (spaces > 0 && all.left == 0 && ++(*pd) && spaces--)
 		(all.zero == 0) ? write(1, " ", 1) : write(1, "0", 1);
-		spaces--;
-	}
-	(c == 'x' && all.hash == 1 && all.zero == 0 && (*s != '0' ||
-		all.type == 'p') && (*pd += 2)) ? write(1, "0x", 2) : 0;
-	(c == 'X' && all.hash == 1 && all.zero == 0 && *s != '0' &&
-	(*pd += 2)) ? write(1, "0X", 2) : 0;
 	(c == 'o' && all.hash == 1 && all.zero == 0 && ++(*pd) && --l) ? write(1, "0", 1) : 0;
 	if (all.znak != 'n' && all.zero == 0 && ++(*pd))
 		write(1, &all.znak, 1);
@@ -148,12 +134,7 @@ void		ft_numb(t_printf *all, va_list ap, int *pd)
 	char	c;
 
 	c = (all->format)[0];
-	if (c == 'p')
-	{
-		all->l_m = 4;
-		all->point = 1;
-		ft_format_p(ap, all, pd);
-	}
+	(c == 'p') ? ft_format_p(ap, all, pd) : 0;
 	(all->h == 1) ? all->zero = 0 : 0;
 	(c == 'i' || c == 'd') ? ft_format_d(ap, all, pd) : 0;
 	(c == 'D') ? ft_format_dd(ap, all, pd) : 0;
@@ -213,8 +194,6 @@ t_printf	*init_printf(t_printf *all)
 {
 	if ((all = (t_printf *)malloc(sizeof(t_printf))) == NULL)
 		exit(1);
-	// all->flag = 'e';
-	all->type = 'n';
 	all->zero = 0;
 	all->w = 0;
 	all->precis = -1;
@@ -224,46 +203,28 @@ t_printf	*init_printf(t_printf *all)
 	all->hash = 0;
 	all->left = 0;
 	all->l_m = 0;
-	all->point = 0;
 	all->min = 0;
 	all->znak = 'n';
-	// all->tochn_bool = 'e';
 	all->format = ft_strnew(1);
 	all->format_spec = ft_strnew(2);
 	return (all);
 }
 
-char	is_changeable(char **c, t_printf *all, int *pd)
+char	is_changeable(char *c)
 {
-	char	*m;
-
-	if (**c == '.' && **(c + 1) && (**(c + 1) >= '0' && **(c + 1) <= '9'))
+	if (*c == '.' && *(c + 1) && (*(c + 1) >= '0' && *(c + 1) <= '9'))
 		return ('p');
-	else if (**c == '.' && **(c + 1) && !(**(c + 1) >= '0' && **(c + 1) <= '9'))
+	if (*c == '.' && *(c + 1) && !(*(c + 1) >= '0' && *(c + 1) <= '9'))
 		return ('g');
-	else if (ft_strchr(FLAG, **c))
+	if (ft_strchr(FLAG, *c))
 		return ('f');
-	else if (**c >= '1' && **c <= '9')
+	if (*c >= '1' && *c <= '9')
 		return ('w');
-	else if (ft_strchr(SPEC, **c))
+	if (ft_strchr(SPEC, *c))
 		return ('m');
-	else if (ft_strchr(TYPE, **c))
+	if (ft_strchr(TYPE, *c))
 		return ('t');
-	else
-	{
-		if (all->w != 0)
-		{
-			m = malloc(sizeof(char) * 2);
-			m[0] = **c;
-			m[1] = '\0';
-			if (all->precis == 0)
-				all->precis = 1;
-			ft_pstr(m, *all, pd, 's');
-			(*c)++;
-			free(m);
-		}
-		return ('0');
-	}
+	return ('0');
 }
 
 char	*ft_check(t_printf *all, char *format, int *pd, va_list ap)
@@ -274,18 +235,18 @@ char	*ft_check(t_printf *all, char *format, int *pd, va_list ap)
 	all = init_printf(all);
 	while (*format != '\0')
 	{
-		if (is_changeable(&format, all, pd) == '0')
+		if (is_changeable(format) == '0')
 			return (format);
-		else if (is_changeable(&format, all, pd) == 'f')
+		else if (is_changeable(format) == 'f')
 			ft_flag(all, (*format++));
-		else if (is_changeable(&format, all, pd) == 'w')
+		else if (is_changeable(format) == 'w')
 		{
 			all->w = ft_atoi(format);
 			while (ft_isdigit(*format))
 				format++;
 			continue;
 		}
-		else if (is_changeable(&format, all, pd) == 'm')
+		else if (is_changeable(format) == 'm')
 		{
 			while (*format && ft_strchr(SPEC, *format))
 			{
@@ -293,9 +254,9 @@ char	*ft_check(t_printf *all, char *format, int *pd, va_list ap)
 				format++;
 			}
 		}
-		else if (is_changeable(&format, all, pd) == 'p')
+		else if (is_changeable(format) == 'p')
 			format = ft_precision(all, format);
-		else if (is_changeable(&format, all, pd) == 't')
+		else if (is_changeable(format) == 't')
 		{
 			ft_type(all, ap, *format, pd);
 			return (++format);
