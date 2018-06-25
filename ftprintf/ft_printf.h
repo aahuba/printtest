@@ -30,6 +30,7 @@ typedef struct	s_printf
 	int			h;
 	int			l_m;
 	char		*res; // result
+	char		type;
 	int			hash;
 	int			zero;
 	int			min;

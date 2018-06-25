@@ -87,13 +87,12 @@ int		ft_spaces(t_printf all, char *s, int l, char c)
 {
 	int spaces;
 
-	spaces = 0;
 	spaces = (all.precis > l) ? all.precis : l;
 	spaces = (all.znak != 'n') ? spaces + 1 : spaces;
 	spaces = (*s == '0' && all.precis == 0) ? 0 : spaces;
 	spaces = (all.w > spaces) ? all.w - spaces : 0;
 	spaces = (c == 'x' && all.hash == 1 && all.zero == 0 && (*s != '0' \
-		|| c == 'p')) ? spaces - 2 : spaces;
+		|| all.type == 'p')) ? spaces - 2 : spaces;
 	spaces = (c == 'o' && all.hash == 1) ? spaces - 1 : spaces;
 	return (spaces);
 }
@@ -104,7 +103,7 @@ void	ft_prnum(char *s, t_printf all, char c, int *pd)
 	int		l;
 
 	l = (s != NULL) ? ft_strlen(s) : 0;
-	spaces = ft_spaces(all, s, l, c);
+	spaces = ft_spaces(all, s, l, c) > 0 ? ft_spaces(all, s, l, c) : 0;
 	l = (all.precis > l) ? all.precis - l : 0;
 	if (all.hash == 1 && (c == 'x' || c == 'X') && all.zero != 0)
 	{
@@ -116,6 +115,8 @@ void	ft_prnum(char *s, t_printf all, char c, int *pd)
 		write(1, &all.znak, 1);
 	while (spaces > 0 && all.left == 0 && ++(*pd) && spaces--)
 		(all.zero == 0) ? write(1, " ", 1) : write(1, "0", 1);
+	(c == 'x' && all.hash == 1 && all.zero == 0 && (*s != '0' ||
+		all.type == 'p') && (*pd += 2)) ? write(1, "0x", 2) : 0;
 	(c == 'o' && all.hash == 1 && all.zero == 0 && ++(*pd) && --l) ? write(1, "0", 1) : 0;
 	if (all.znak != 'n' && all.zero == 0 && ++(*pd))
 		write(1, &all.znak, 1);
@@ -194,6 +195,7 @@ t_printf	*init_printf(t_printf *all)
 {
 	if ((all = (t_printf *)malloc(sizeof(t_printf))) == NULL)
 		exit(1);
+	all->type = 'n';
 	all->zero = 0;
 	all->w = 0;
 	all->precis = -1;
@@ -227,6 +229,24 @@ char	is_changeable(char *c)
 	return ('0');
 }
 
+int		som(char **str, t_printf *all, int *pd)
+{
+	char	*m;
+
+	if (all->w != 0)
+	{
+		m = malloc(sizeof(char) * 2);
+		m[0] = **str;
+		m[1] = '\0';
+		if (all->precis == 0)
+			all->precis = 1;
+		ft_pstr(m, *all, pd, 's');
+		(*str)++;
+		free(m);
+	}
+	return (1);
+}
+
 char	*ft_check(t_printf *all, char *format, int *pd, va_list ap)
 {
 	int		i;
@@ -235,7 +255,7 @@ char	*ft_check(t_printf *all, char *format, int *pd, va_list ap)
 	all = init_printf(all);
 	while (*format != '\0')
 	{
-		if (is_changeable(format) == '0')
+		if (is_changeable(format) == '0' && som(&format, all, pd))
 			return (format);
 		else if (is_changeable(format) == 'f')
 			ft_flag(all, (*format++));

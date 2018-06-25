@@ -5,6 +5,7 @@ char	*ft_format(va_list ap, t_printf *all, int *pd, char c)
 	unsigned long long int a;
 
 	c == 'O' ? ft_modific(all, "l") : 0;
+	c == 'O' ? c = 'o' : 0;
 	a = va_arg(ap, unsigned long long int);
 	if (all->l_m == 0)
 		a = (unsigned int)(a);
@@ -20,7 +21,7 @@ char	*ft_format(va_list ap, t_printf *all, int *pd, char c)
 		a = (uintmax_t)(a);
 	else if (all->l_m == 6)
 		a = (size_t)(a);
-	(c == 'O' || c == 'o') ? ft_prnum(ft_itoa_base(a, 8, all), *all, c, pd) : 0;
+	(c == 'o') ? ft_prnum(ft_itoa_base(a, 8, all), *all, c, pd) : 0;
 	(c == 'u') ? ft_prnum(ft_itoa_base(a, 10, all), *all, 'u', pd) : 0;
 	if (c == 'x' || c == 'X')
 		return (ft_itoa_base(a, 16, all));
