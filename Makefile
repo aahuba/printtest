@@ -43,7 +43,7 @@ FT_COMPILED =		ft_atoi.o \
 			ft_toupper.o \
 			ft_isdigit.o
 
-PRINTF_COMPILED =	ft_printf.o ft_format_s.o ft_format_percent.o ft_format.o ft_format_p.o ft_itoa_base.o
+PRINTF_COMPILED =	ft_printf.o ft_format_s.o ft_format_percent.o ft_format.o ft_format_p.o ft_itoa_base.o ft_out.o ft_read.o
 COMPILED =			$(FT_COMPILED) $(PRINTF_COMPILED)
 OBJECTS = $(addprefix ${OBJDIR}, ${COMPILED})
 
