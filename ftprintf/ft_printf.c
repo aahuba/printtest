@@ -115,8 +115,9 @@ void	ft_prnum(char *s, t_printf all, char c, int *pd)
 		write(1, &all.znak, 1);
 	while (spaces > 0 && all.left == 0 && ++(*pd) && spaces--)
 		(all.zero == 0) ? write(1, " ", 1) : write(1, "0", 1);
-	(c == 'x' && all.hash == 1 && all.zero == 0 && (*s != '0' ||
-		all.type == 'p') && (*pd += 2)) ? write(1, "0x", 2) : 0;
+	// (c == 'x' && all.hash == 1 && all.zero == 0 && (*s != '0' ||
+	// 	all.type == 'p') && (*pd += 2)) ? write(1, "0x", 2) : 0;
+	(all.type == 'p' && all.zero == 0 && (*pd += 2)) ? write(1, "0x", 2) : 0;
 	(c == 'o' && all.hash == 1 && all.zero == 0 && ++(*pd) && --l) ? write(1, "0", 1) : 0;
 	if (all.znak != 'n' && all.zero == 0 && ++(*pd))
 		write(1, &all.znak, 1);

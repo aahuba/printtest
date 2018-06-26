@@ -42,10 +42,12 @@ void	ft_format_xx(va_list ap, t_printf *all, int *pd, char c)
 	char *a;
 
 	a = ft_format(ap, all, pd, c);
-	if (c == 'x' && all->hash == 1 && all->zero == 0 && *a != '0' && (*pd -= 2))
+	if (c == 'x' && all->hash == 1 && all->zero == 0 && *a != '0' && *a != '1')
 		a = ft_strjoin("0x", a);
-	if (c == 'X' && all->hash == 1 && all->zero == 0 && *a != '0' && (*pd -= 2))
+	if (c == 'X' && all->hash == 1 && all->zero == 0 && *a != '0')
 		a = ft_strjoin("0X", a);
+	if (c == 'x' && all->hash == 1 && all->zero == 0 && *a != '0' && *a == '1' && (*pd += 2))
+		write(1, "0x", 2);
 	if (c == 'X')
 		ft_strupper(a);
 	ft_prnum(a, *all, c, pd);

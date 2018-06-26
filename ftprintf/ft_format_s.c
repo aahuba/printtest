@@ -154,6 +154,9 @@ void	ft_unicode(t_printf all, va_list ap, int *pd)
 		ft_pstr(NULL, all, pd, 's');
 	while (str && str[i])
 		num_bits += n_bits(str[i++], &all);
+	num_bits == 13 ? num_bits = 0 : 0;
+	while (all.left != 1 && all.w-- > num_bits && ++(*pd))
+		(all.zero == 0) ? write(1, " ", 1) : write(1, "0", 1);
 	i = 0;
 	while (num_bits > 0)
 	{
