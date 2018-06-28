@@ -58,7 +58,8 @@ void	ft_format_xx(va_list ap, t_printf *all, int *pd, char c)
 		a = ft_strjoin("0x", a);
 	if (c == 'X' && all->hash == 1 && all->zero == 0 && *a != '0')
 		a = ft_strjoin("0X", a);
-	if (c == 'x' && all->hash == 1 && all->zero == 0 && *a != '0' && *a == '1' && (*pd += 2))
+	if (c == 'x' && all->hash == 1 && all->zero == 0
+	&& *a != '0' && *a == '1' && (*pd += 2))
 		write(1, "0x", 2);
 	if (c == 'X')
 		ft_strupper(a);
@@ -83,7 +84,7 @@ void	ft_format_d(va_list ap, t_printf *all, int *pd)
 	else if (all->l_m == 5)
 		a = (intmax_t)a;
 	else if (all->l_m == 6)
-		a = (size_t)a ;
+		a = (size_t)a;
 	ft_prnum(ft_itoa(a, all), *all, 'd', pd);
 }
 

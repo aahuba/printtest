@@ -46,7 +46,7 @@ char	is_changeable(char *c)
 	return ('0');
 }
 
-void		parse_conv(t_printf *all, char *format)
+void	parse_conv(t_printf *all, char *format)
 {
 	if (ft_strchr(TYPE, *format))
 	{
@@ -56,7 +56,7 @@ void		parse_conv(t_printf *all, char *format)
 	}
 }
 
-char		*ft_precision(t_printf *all, char *format)
+char	*ft_precision(t_printf *all, char *format)
 {
 	++format;
 	all->precis = ft_atoi(format);
@@ -66,7 +66,7 @@ char		*ft_precision(t_printf *all, char *format)
 	return (format);
 }
 
-void		ft_type(t_printf *all, va_list ap, char format, int *pd)
+void	ft_type(t_printf *all, va_list ap, char format, int *pd)
 {
 	parse_conv(all, &format);
 	ft_modific(all, all->format_spec);

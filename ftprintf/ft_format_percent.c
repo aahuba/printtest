@@ -12,17 +12,22 @@
 
 #include "ft_printf.h"
 
-void	ft_format_percent(t_printf *all, int *pd)
+void				ft_format_percent(t_printf *all, int *pd)
 {
 	if (all->precis == 0)
-			all->precis = 1;
+		all->precis = 1;
 	ft_pstr(ft_strdup("%"), *all, pd, 's');
 }
 
-void	ft_prunic(unsigned int num, int *pd, int size)
+void				ft_prunic(unsigned int num, int *pd, int size)
 {
+	unsigned char	octet;
+
 	if (size == 1 && ((*pd) += 1))
-		ft_one_bit(num);
+	{
+		octet = (unsigned char)num;
+		write(1, &octet, 1);
+	}
 	else if (size == 2 && ((*pd) += 2))
 		ft_two_bit(num);
 	else if (size == 3 && ((*pd) += 3))
@@ -30,14 +35,13 @@ void	ft_prunic(unsigned int num, int *pd, int size)
 	return ;
 }
 
-int		n_bits(unsigned int num, t_printf *all)
+int					n_bits(unsigned int num, t_printf *all)
 {
 	int		num_bits;
 	char	*p;
 
 	p = ft_itoa_base(num, 2, all);
 	num_bits = ft_strlen(p);
-	free(p);
 	num_bits /= 2;
 	if (num_bits < 4)
 		num_bits = 1;
@@ -47,10 +51,11 @@ int		n_bits(unsigned int num, t_printf *all)
 		num_bits = 3;
 	else
 		num_bits = 4;
+	free(p);
 	return (num_bits);
 }
 
-void	ft_unicode(t_printf all, va_list ap, int *pd)
+void				ft_unicode(t_printf all, va_list ap, int *pd)
 {
 	wchar_t			*str;
 	unsigned int	c;

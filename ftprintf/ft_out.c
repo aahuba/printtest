@@ -12,9 +12,28 @@
 
 #include "ft_printf.h"
 
-int		ft_spaces(t_printf all, char *s, int l, char c)
+void		ft_width(t_printf *all, char **format)
 {
-	int spaces;
+	all->w = ft_atoi(*format);
+	while (ft_isdigit(**format))
+		(*format)++;
+}
+
+void		ft_modif(t_printf *all, char **format)
+{
+	int		i;
+
+	i = 0;
+	while (**format && ft_strchr(SPEC, **format))
+	{
+		(all->format_spec)[i++] = **format;
+		(*format)++;
+	}
+}
+
+int			ft_spaces(t_printf all, char *s, int l, char c)
+{
+	int		spaces;
 
 	spaces = (all.precis > l) ? all.precis : l;
 	spaces = (all.znak != 'n') ? spaces + 1 : spaces;
@@ -26,7 +45,7 @@ int		ft_spaces(t_printf all, char *s, int l, char c)
 	return (spaces);
 }
 
-void	ft_prnum(char *s, t_printf all, char c, int *pd)
+void		ft_prnum(char *s, t_printf all, char c, int *pd)
 {
 	int		spaces;
 	int		l;
@@ -34,26 +53,23 @@ void	ft_prnum(char *s, t_printf all, char c, int *pd)
 	l = (s != NULL) ? ft_strlen(s) : 0;
 	spaces = ft_spaces(all, s, l, c) > 0 ? ft_spaces(all, s, l, c) : 0;
 	l = (all.precis > l) ? all.precis - l : 0;
-	if (all.hash == 1 && (c == 'x' || c == 'X') && all.zero != 0)
+	if (all.hash == 1 && (c == 'x' || c == 'X') && all.zero != 0 && (*pd += 2))
 	{
-		(c == 'X') ? write(1, "0X", 2) : write(1, "0x", 2);
+		((c == 'X')) ? write(1, "0X", 2) : write(1, "0x", 2);
 		spaces -= 2;
-		(*pd) += 2;
 	}
-	if (all.znak != 'n' && all.zero != 0 && ++(*pd))
-		write(1, &all.znak, 1);
+	(all.znak != 'n' && all.zero != 0 && ++(*pd)) ? write(1, &all.znak, 1) : 0;
 	while (spaces > 0 && all.left == 0 && ++(*pd) && spaces--)
 		(all.zero == 0) ? write(1, " ", 1) : write(1, "0", 1);
 	(all.type == 'p' && all.zero == 0 && (*pd += 2)) ? write(1, "0x", 2) : 0;
-	(c == 'o' && all.hash == 1 && all.zero == 0 && ++(*pd) && --l) ? write(1, "0", 1) : 0;
-	if (all.znak != 'n' && all.zero == 0 && ++(*pd))
-		write(1, &all.znak, 1);
+	if (c == 'o' && all.hash == 1 && all.zero == 0 && ++(*pd) && --l)
+		write(1, "0", 1);
+	(all.znak != 'n' && all.zero == 0 && ++(*pd)) ? write(1, &all.znak, 1) : 0;
 	while (l-- > 0 && ++(*pd))
 		write(1, "0", 1);
 	*pd < 0 ? *pd += 2 : 0;
-	if (s != NULL && !(*s == '0' && all.precis == 0) && !(*s == '0'
-		&& c == 'o' && all.hash == 1) && ((*pd) += ft_strlen(s)))
-		ft_putstr(s);
+	(s != NULL && !(*s == '0' && all.precis == 0) && !(*s == '0' && c == 'o'
+	&& all.hash == 1) && ((*pd) += ft_strlen(s))) ? ft_putstr(s) : 0;
 	while (spaces-- && all.left == 1 && ++(*pd))
 		(all.zero == 0) ? write(1, " ", 1) : write(1, "0", 1);
 }

@@ -12,7 +12,7 @@
 
 #include "ft_printf.h"
 
-void		ft_numb(t_printf *all, va_list ap, int *pd)
+void			ft_numb(t_printf *all, va_list ap, int *pd)
 {
 	char	c;
 
@@ -31,23 +31,24 @@ void		ft_numb(t_printf *all, va_list ap, int *pd)
 	}
 }
 
-void		ft_chr(t_printf *all, va_list ap, int *pd)
+void			ft_chr(t_printf *all, va_list ap, int *pd)
 {
 	if ((all->format)[0] == 's' && all->l_m != 3)
 		ft_pstr(va_arg(ap, char *), *all, pd, 's');
-	else if ((all->format)[0] == 'S' || ((all->format)[0] == 's' && all->l_m == 3))
+	else if ((all->format)[0] == 'S' ||
+	((all->format)[0] == 's' && all->l_m == 3))
 		ft_unicode(*all, ap, pd);
 	else if ((all->format)[0] == 'c' && all->l_m != 3)
 		ft_format_c(all, ap, pd, (all->format)[0]);
-	else if ((all->format)[0] == 'C' || ((all->format)[0] == 'c' && all->l_m == 3))
+	else if ((all->format)[0] == 'C' ||
+	((all->format)[0] == 'c' && all->l_m == 3))
 		ft_format_c(all, ap, pd, (all->format)[0]);
 }
 
-
-t_printf	*init_printf(t_printf *all)
+t_printf		*init_printf(t_printf *all)
 {
-	if ((all = (t_printf *)malloc(sizeof(t_printf))) == NULL)
-		exit(1);
+	all = NULL;
+	all = (t_printf *)malloc(sizeof(t_printf));
 	all->type = 'n';
 	all->zero = 0;
 	all->w = 0;
@@ -65,11 +66,8 @@ t_printf	*init_printf(t_printf *all)
 	return (all);
 }
 
-char	*ft_check(t_printf *all, char *format, int *pd, va_list ap)
+char			*ft_check(t_printf *all, char *format, int *pd, va_list ap)
 {
-	int		i;
-
-	i = 0;
 	all = init_printf(all);
 	while (*format != '\0')
 	{
@@ -78,20 +76,9 @@ char	*ft_check(t_printf *all, char *format, int *pd, va_list ap)
 		else if (is_changeable(format) == 'f')
 			ft_flag(all, (*format++));
 		else if (is_changeable(format) == 'w')
-		{
-			all->w = ft_atoi(format);
-			while (ft_isdigit(*format))
-				format++;
-			continue;
-		}
+			ft_width(all, &format);
 		else if (is_changeable(format) == 'm')
-		{
-			while (*format && ft_strchr(SPEC, *format))
-			{
-				(all->format_spec)[i++] = *format;
-				format++;
-			}
-		}
+			ft_modif(all, &format);
 		else if (is_changeable(format) == 'p')
 			format = ft_precision(all, format);
 		else if (is_changeable(format) == 't')
@@ -105,12 +92,12 @@ char	*ft_check(t_printf *all, char *format, int *pd, va_list ap)
 	return (NULL);
 }
 
-int     ft_printf(char *format, ...)
+int				ft_printf(char *format, ...)
 {
 	va_list		ap;
 	int			pd;
 	char		*ptr;
-	t_printf    *all;
+	t_printf	*all;
 
 	if (ft_strcmp(format, "%") == 0)
 		return (0);

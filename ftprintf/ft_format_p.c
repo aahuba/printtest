@@ -24,6 +24,7 @@ void	ft_format_p(va_list ap, t_printf *all, int *pd)
 	ret = ft_strdup("");
 	ft_strcat(ret, ft_itoa_base((unsigned long int)a, 16, all));
 	ft_prnum(ret, *all, 'x', pd);
+	(ret) ? free(ret) : 0;
 }
 
 char	*ft_modific_2(t_printf *all, char *str)
@@ -73,11 +74,11 @@ int		som(char **str, t_printf *all, int *pd)
 
 	if (all->w != 0)
 	{
+		if (all->precis == 0)
+			all->precis = 1;
 		m = malloc(sizeof(char) * 2);
 		m[0] = **str;
 		m[1] = '\0';
-		if (all->precis == 0)
-			all->precis = 1;
 		ft_pstr(m, *all, pd, 's');
 		(*str)++;
 		free(m);

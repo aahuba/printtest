@@ -12,14 +12,6 @@
 
 #include "ft_printf.h"
 
-void	ft_one_bit(unsigned int num)
-{
-	unsigned char	octet;
-
-	octet = (unsigned char)num;
-	write(1, &octet, 1);
-}
-
 void	ft_two_bit(unsigned int num)
 {
 	unsigned int	mask1;
@@ -59,20 +51,22 @@ void	ft_three_bit(unsigned int num)
 char	*ft_format_c(t_printf *all, va_list ap, int *pd, char c)
 {
 	unsigned int	a;
-	char	*ret;
-	int			num_bits;
+	char			*ret;
+	int				num_bits;
 
 	ret = ft_strnew(2);
 	if (!ret)
 		return (NULL);
 	a = (unsigned int)va_arg(ap, wint_t);
 	num_bits = n_bits(a, all);
-	if (((c == 'C') || (c == 'c' && all->l_m == 3)) && num_bits == 2 && (*pd += 2))
+	if (((c == 'C') || (c == 'c' && all->l_m == 3))
+	&& num_bits == 2 && (*pd += 2))
 	{
 		ft_two_bit(a);
 		return (0);
 	}
-	if (((c == 'C') || (c == 'c' && all->l_m == 3)) && num_bits == 3 && (*pd += 3))
+	if (((c == 'C') || (c == 'c' && all->l_m == 3))
+	&& num_bits == 3 && (*pd += 3))
 	{
 		ft_three_bit(a);
 		return (0);
